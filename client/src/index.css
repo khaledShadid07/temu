@@ -1,6 +1,8 @@
 body {
   margin: 0;
-  font-family:roboto,poppins
+  font-family:roboto,poppins;
+  overflow-x: hidden;
+  
 
 }
 
