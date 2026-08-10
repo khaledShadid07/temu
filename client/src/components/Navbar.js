@@ -1,7 +1,16 @@
 import React from 'react'
 import './Navbar.css'
-
+import { useState} from 'react'
+import { useNavigate } from 'react-router-dom'
+import axios from 'axios'
 const Navbar = () => {
+  const API_URL = process.env.REACT_APP_API_URL;
+  const [userName, setUserName] = useState('');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const navigate = useNavigate()
+  const [loading, setLoading] = useState(false);
+  const [token,setToken]=useState(localStorage.getItem('token')||'')
   return (
     <>
       {/*upper nav start  */}
@@ -138,8 +147,35 @@ const Navbar = () => {
 
       {/* 1st modal start */}
       <div class="modal fade" id="staticBackdrop" data-bs-backdrop="static" data-bs-keyboard="false" tabIndex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+        
         <div class="modal-dialog">
-          <div class="modal-content">
+        {token? <div class="modal-content">
+            <div className="modal-header ">
+              <button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+             {/* 1 */}
+            <div className='d-flex justify-content-center gap-1 '>
+              <p style={{ fontFamily: 'Noto Sans Arabic', color: 'rgb(10, 136, 0)' }} className=' '>اهلا وسهلا </p>
+              <svg xmlns="http://www.w3.org/2000/svg" version="1.1" viewBox="0 0 1024 1024" width="1em" height="1em" fill="rgb(10, 136, 0)" className="mt-1   lock-1D86P" aria-hidden="true"><path d="M512 30.7c138.6 0 250.9 112.3 250.9 250.9l0 61.4 35.8 0c59.5 0 108.2 46.1 112.4 104.6l0.3 8.1 0 419.8c0 62.2-50.4 112.6-112.7 112.7l-573.4 0c-62.2 0-112.6-50.4-112.7-112.7l0-419.8c0-62.2 50.4-112.6 112.7-112.7l35.8 0 0-61.4c0-134.8 106.3-244.8 239.7-250.6l11.2-0.3z m0 506.9c-22.6 0-41 18.3-41 41l0 174c0 22.6 18.3 41 41 41 22.6 0 41-18.3 41-41l0-174c0-22.6-18.3-41-41-41z m0-414.7c-87.7 0-158.7 71.1-158.7 158.7l0 56.3 317.4 0 0-56.3c0-84.6-66.2-153.8-149.7-158.5l-9-0.2z"></path></svg>
+            </div>
+            {/* 1end */}
+     
+            {/*login form start */} {/*login form start */} {/*login form start */} {/*login form start */}
+            <form  className='form-login d-flex flex-column' action="">
+
+              <p style={{ fontFamily: 'Noto Sans Arabic', textAlign: 'center' }} className='fw-bold'>يمكنك الان التسوق ومتابعه جميع العروض </p>
+             
+              {/*  */}
+              <button style={{ fontFamily: 'Noto Sans Arabic' ,border:'none'}} onClick={()=>{localStorage.removeItem('token');setToken(localStorage.getItem('token'))}} className="policyNote-hocda policyClassName-1LYrA text-center mt-3 text-danger"> تسجيل الخروج</button>
+              <br/>
+              <div style={{ fontFamily: 'Noto Sans Arabic' }} className="policyNote-hocda policyClassName-1LYrA text-center mt-3"><span class="policyLinkParent-1X3oa"><a href="#" className="a-raak6 policyLink-jKwVU" aria-label="شروط الاستخدام - يفتح في صفحة جديدة، رابط." tabindex="0">شروط الاستخدام</a></span> و<span class="policyLinkParent-1X3oa"><a href="#" className="a-raak6 policyLink-jKwVU" aria-label="سياسة الخصوصية - يفتح في صفحة جديدة، رابط." role="link" tabindex="0">سياسة الخصوصية</a></span>.</div>
+            </form>
+
+            {/*login form end */} {/*login form end */} {/*login form end */} {/*login form end */}
+
+
+          </div>:
+         <div class="modal-content">
             <div className="modal-header ">
               <button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
@@ -169,12 +205,38 @@ const Navbar = () => {
             </main>
             {/* 2end */}
 
-            {/* form start */}
-            <form onSubmit={(e)=>{e.preventDefault()}} className='form-login d-flex flex-column' action="">
-              <p style={{ fontFamily: 'Noto Sans Arabic', textAlign: 'right' }} className='fw-bold'>البريد الإلكتروني أو رقم الهاتف</p>
-              <input style={{ height: '50px' }} className='form-control border border-secondary' type="text"  />
-              <button type="submit" class="form-login-btn mt-4 fw-bold" data-bs-dismiss="modal" data-bs-toggle="modal" data-bs-target="#staticBackdrop1">المتابعة</button>
-              <p style={{ fontFamily: 'Noto Sans Arabic', textAlign: 'center' }} className=' text-secondary mt-3'><u>هل تواجه مشكلة في تسجيل الدخول؟</u> </p>
+            {/*login form start */} {/*login form start */} {/*login form start */} {/*login form start */}
+            <form onSubmit={async (e) => {
+              e.preventDefault()
+              setLoading(true)
+              try {
+                console.log(`url:${API_URL}`)
+                const res = await axios.post(`${API_URL}/users/login`, { email, password })
+                localStorage.setItem('token', res.data.token)
+                setToken(localStorage.getItem('token'))
+                alert('you login successfully ✅');
+                navigate('/AllProducts');
+                
+              }
+              catch (error) {
+                const message = error.response?.data?.message || error.message
+                alert(message)
+              }
+
+              finally {
+                setLoading(false)
+              }
+
+
+            }} className='form-login d-flex flex-column' action="">
+
+              <p style={{ fontFamily: 'Noto Sans Arabic', textAlign: 'right' }} className='fw-bold'>البريد الإلكتروني </p>
+              <input style={{ height: '50px' }} className='form-control border border-secondary' type="email" value={email} onChange={(e) => setEmail(e.target.value)} />
+              <br />
+              <p style={{ fontFamily: 'Noto Sans Arabic', textAlign: 'right' }} className='fw-bold'>كلمه المرور</p>
+              <input style={{ height: '50px' }} className='form-control border border-secondary' type="password" value={password} onChange={(e) => setPassword(e.target.value)} />
+              <button type="submit" class="form-login-btn mt-4 fw-bold" >{loading ? 'يرجى الانتظار ⏳' : 'المتابعه'}</button>
+              <button type="button" data-bs-dismiss="modal" data-bs-toggle="modal" data-bs-target="#staticBackdrop1" style={{ border: 'none' }}>  <p style={{ fontFamily: 'Noto Sans Arabic', textAlign: 'center' }} className=' text-secondary mt-3'><u>إنشاء حساب جديد</u> </p> </button>
               <p style={{ fontFamily: 'Noto Sans Arabic', textAlign: 'center' }} className=' text-secondary mt-4'>أو المتابعة بطرق أخرى</p>
               {/*  */}
               <div className='d-flex align-items-center justify-content-center gap-4'>
@@ -188,11 +250,16 @@ const Navbar = () => {
               <div style={{ fontFamily: 'Noto Sans Arabic' }} className="policyNote-hocda policyClassName-1LYrA text-center mt-3">بالمتابعة، فإنك توافق على <span class="policyLinkParent-1X3oa"><a href="#" className="a-raak6 policyLink-jKwVU" aria-label="شروط الاستخدام - يفتح في صفحة جديدة، رابط." tabindex="0">شروط الاستخدام</a></span> و<span class="policyLinkParent-1X3oa"><a href="#" className="a-raak6 policyLink-jKwVU" aria-label="سياسة الخصوصية - يفتح في صفحة جديدة، رابط." role="link" tabindex="0">سياسة الخصوصية</a></span>.</div>
             </form>
 
-            {/* form end */}
+            {/*login form end */} {/*login form end */} {/*login form end */} {/*login form end */}
 
 
           </div>
+        
+        }   
+         
+
         </div>
+
       </div>
 
       {/*1st modal end  */}
@@ -203,7 +270,16 @@ const Navbar = () => {
 
       <div class="modal fade" id="staticBackdrop1" data-bs-backdrop="static" data-bs-keyboard="false" tabIndex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
         <div class="modal-dialog">
-          <div class="modal-content">
+          {token?<div class="modal-content">
+            <div className="modal-header ">
+              <button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <p className="modal-title profile-modal-txt1 mt-4 " id="staticBackdropLabel ">لقد تم انشاء الحساب بنجاح  ✅</p>
+            <br/>
+            <br/>
+           
+
+          </div>  :<div class="modal-content">
             <div className="modal-header ">
               <button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
@@ -216,33 +292,53 @@ const Navbar = () => {
             {/* 1end */}
 
             {/* form start */}
-            <form className='form-login d-flex flex-column' action="">
+            <form className='form-login d-flex flex-column' onSubmit={async (e) => {
+              e.preventDefault();
+              setLoading(true)
+              try {
+                const res =await axios.post(`${API_URL}/users/register`,{userName,email,password})
+                localStorage.setItem('token', res.data.token)
+                setToken(localStorage.getItem('token'))
+                alert('you registered successfully ✅');
+                navigate('/AllProducts');
+               }
+              catch (error) {
+                const message = error.response?.data?.message || error.message
+                alert(message)
+              }
+              finally{setLoading(false)}
+
+            }}>
               <div className='mb-4'>
                 <div style={{ fontFamily: 'Noto Sans Arabic', textAlign: 'right' }} className='fw-bold'>أنشئ حسابك</div>
                 <div style={{ fontFamily: 'Noto Sans Arabic', textAlign: 'right' }} className=''>سجل الآن بكل سهولة؛ فما عليك سوى إدخال كلمة المرور.</div>
 
               </div>
-              <p style={{ fontFamily: 'Noto Sans Arabic', textAlign: 'right' }} className='fw-bold mt-4'>البريد الإلكتروني أو رقم الهاتف</p>
-              <input style={{ height: '50px' }} className='form-control border border-secondary' type="text" />
-            
+              <p style={{ fontFamily: 'Noto Sans Arabic', textAlign: 'right' }} className='fw-bold mt-4'>اسم المستخدم</p>
+              <input style={{ height: '50px' }} className='form-control border border-secondary' type="text" value={userName} onChange={(e) => setUserName(e.target.value)} />
+
+              <p style={{ fontFamily: 'Noto Sans Arabic', textAlign: 'right' }} className='fw-bold mt-4'>البريد الإلكتروني </p>
+              <input style={{ height: '50px' }} className='form-control border border-secondary' type="email" value={email} onChange={(e) => setEmail(e.target.value)} />
+
               <p style={{ fontFamily: 'Noto Sans Arabic', textAlign: 'right' }} className='fw-bold mt-4' >كلمة المرور</p>
-              <input style={{ height: '50px' }} placeholder='كلمه المرور: يلزم ادخال 8 احرف على الاقل' className='form-control border border-secondary pass-input' type="password"  />
-              <button type="submit" class="form-login-btn mt-4 fw-bold" >التسجيل</button>
-                           {/*  */}
+              <input style={{ height: '50px' }} placeholder='كلمه المرور: يلزم ادخال 8 احرف على الاقل' className='form-control border border-secondary pass-input' type="password" value={password} onChange={(e) => setPassword(e.target.value)} />
+              <button type="submit" class="form-login-btn mt-4 fw-bold" >{loading ? 'يرجى الانتظار ⏳' : 'التسجيل'}</button>
+              {/*  */}
               <div className='mb-4 mt-4'>
                 <div style={{ fontFamily: 'Noto Sans Arabic', textAlign: 'right' }} className='fw-bold'>:جودة كلمة المرور</div>
                 <div style={{ fontFamily: 'Noto Sans Arabic', textAlign: 'right' }} className=''>لا تستخدم كلمة مرور من موقع آخر، أو شيئًا واضحًا جدًا مثل اسم حيوانك الأليف.</div>
 
               </div>
               {/*  */}
-             <div style={{ fontFamily: 'Noto Sans Arabic' }} className="policyNote-hocda policyClassName-1LYrA text-center mt-3 policy-2nd">بالمتابعة، فإنك توافق على <span class="policyLinkParent-1X3oa"><a href="#" className="a-raak6 policyLink-jKwVU" aria-label="شروط الاستخدام - يفتح في صفحة جديدة، رابط." tabindex="0">شروط الاستخدام</a></span> و<span class="policyLinkParent-1X3oa"><a href="#" className="a-raak6 policyLink-jKwVU" aria-label="سياسة الخصوصية - يفتح في صفحة جديدة، رابط." role="link" tabindex="0">سياسة الخصوصية</a></span>.</div>
+              <div style={{ fontFamily: 'Noto Sans Arabic' }} className="policyNote-hocda policyClassName-1LYrA text-center mt-3 policy-2nd">بالمتابعة، فإنك توافق على <span class="policyLinkParent-1X3oa"><a href="#" className="a-raak6 policyLink-jKwVU" aria-label="شروط الاستخدام - يفتح في صفحة جديدة، رابط." tabindex="0">شروط الاستخدام</a></span> و<span class="policyLinkParent-1X3oa"><a href="#" className="a-raak6 policyLink-jKwVU" aria-label="سياسة الخصوصية - يفتح في صفحة جديدة، رابط." role="link" tabindex="0">سياسة الخصوصية</a></span>.</div>
 
             </form>
 
             {/* form end */}
 
 
-          </div>
+          </div>}
+          
         </div>
 
       </div>

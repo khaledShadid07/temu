@@ -8,7 +8,6 @@ exports.auth = (req, res, next) => {
 
   try {
     const decoded = jwt.verify(token, process.env.JWT_SECRET)
-    console.log("decoded token", decoded)
     req.user = decoded.id
     req.role = decoded.role
     next();
@@ -22,3 +21,18 @@ exports.auth = (req, res, next) => {
 }
 
 
+exports.adminAuth =(req,res,next)=>{
+const token = req.header('authorization');
+if(!token){return res.status(401).json({message:"No token access denied"})}
+
+try{
+    const decoded = jwt.verify(token,process.env.JWT_SECRET);
+    req.user=decoded.id 
+    req.role=decoded.role
+    if(req.role !=='admin'){return res.status(403).json({message:'Access denied. Admin privileges required.'})}
+    next();
+}
+
+catch(error){res.status(401).json({message:'Invalid or expired token'})}
+
+};

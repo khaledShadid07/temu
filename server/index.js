@@ -1,4 +1,5 @@
 const userRouter = require('./router/userRouter')
+const productRouter=require('./router/productRouter')
 const connectdb = require('./config/db')
 const express = require('express')
 const dotenv = require ('dotenv')
@@ -14,8 +15,9 @@ app.use(cors({origin: "*",credentials: true,methods: "*",allowedHeaders: ['Conte
 
 app.use('/uploads',express.static('uploads'))
 app.use('/users',userRouter)
+app.use('/products',productRouter)
 
 
 
-const port = process.env.PORT ||5050;
+const port = process.env.PORT ||5000;
 app.listen(port,()=>console.log(`🚀 server is running on port ${port} 🚀`))

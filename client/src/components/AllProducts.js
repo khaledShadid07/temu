@@ -1,6 +1,7 @@
 import React from 'react'
 import './AllProducts.css'
 import Navbar from './Navbar'
+
 const AllProducts = () => {
   return (
     <>
