@@ -155,7 +155,7 @@ const Navbar = () => {
             </div>
              {/* 1 */}
             <div className='d-flex justify-content-center gap-1 '>
-              <p style={{ fontFamily: 'Noto Sans Arabic', color: 'rgb(10, 136, 0)' }} className=' '>اهلا وسهلا </p>
+              <p style={{ fontFamily: 'Noto Sans Arabic', color: 'rgb(10, 136, 0)' }} className=' '>{localStorage.getItem('userName')} اهلا وسهلا </p> 
               <svg xmlns="http://www.w3.org/2000/svg" version="1.1" viewBox="0 0 1024 1024" width="1em" height="1em" fill="rgb(10, 136, 0)" className="mt-1   lock-1D86P" aria-hidden="true"><path d="M512 30.7c138.6 0 250.9 112.3 250.9 250.9l0 61.4 35.8 0c59.5 0 108.2 46.1 112.4 104.6l0.3 8.1 0 419.8c0 62.2-50.4 112.6-112.7 112.7l-573.4 0c-62.2 0-112.6-50.4-112.7-112.7l0-419.8c0-62.2 50.4-112.6 112.7-112.7l35.8 0 0-61.4c0-134.8 106.3-244.8 239.7-250.6l11.2-0.3z m0 506.9c-22.6 0-41 18.3-41 41l0 174c0 22.6 18.3 41 41 41 22.6 0 41-18.3 41-41l0-174c0-22.6-18.3-41-41-41z m0-414.7c-87.7 0-158.7 71.1-158.7 158.7l0 56.3 317.4 0 0-56.3c0-84.6-66.2-153.8-149.7-158.5l-9-0.2z"></path></svg>
             </div>
             {/* 1end */}
@@ -166,7 +166,7 @@ const Navbar = () => {
               <p style={{ fontFamily: 'Noto Sans Arabic', textAlign: 'center' }} className='fw-bold'>يمكنك الان التسوق ومتابعه جميع العروض </p>
              
               {/*  */}
-              <button style={{ fontFamily: 'Noto Sans Arabic' ,border:'none'}} onClick={()=>{localStorage.removeItem('token');setToken(localStorage.getItem('token'))}} className="policyNote-hocda policyClassName-1LYrA text-center mt-3 text-danger"> تسجيل الخروج</button>
+              <button style={{ fontFamily: 'Noto Sans Arabic' ,border:'none'}} onClick={()=>{localStorage.removeItem('token');setToken(localStorage.getItem('token'));localStorage.removeItem('userName');setUserName('')}} className="policyNote-hocda policyClassName-1LYrA text-center mt-3 text-danger"> تسجيل الخروج</button>
               <br/>
               <div style={{ fontFamily: 'Noto Sans Arabic' }} className="policyNote-hocda policyClassName-1LYrA text-center mt-3"><span class="policyLinkParent-1X3oa"><a href="#" className="a-raak6 policyLink-jKwVU" aria-label="شروط الاستخدام - يفتح في صفحة جديدة، رابط." tabindex="0">شروط الاستخدام</a></span> و<span class="policyLinkParent-1X3oa"><a href="#" className="a-raak6 policyLink-jKwVU" aria-label="سياسة الخصوصية - يفتح في صفحة جديدة، رابط." role="link" tabindex="0">سياسة الخصوصية</a></span>.</div>
             </form>
@@ -214,6 +214,8 @@ const Navbar = () => {
                 const res = await axios.post(`${API_URL}/users/login`, { email, password })
                 localStorage.setItem('token', res.data.token)
                 setToken(localStorage.getItem('token'))
+                localStorage.setItem('userName',res.data.user.userName)
+                setUserName(localStorage.getItem('userName'))
                 alert('you login successfully ✅');
                 navigate('/AllProducts');
                 

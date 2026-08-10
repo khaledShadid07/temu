@@ -9,4 +9,9 @@
 .card1{margin-bottom: 120px;}
 
 
+.img-card{width: 275px; /* Required initial starting value */
+  transition: width 0.25s ease;}
+.img-card:hover{width: 280px;}
+
+
 

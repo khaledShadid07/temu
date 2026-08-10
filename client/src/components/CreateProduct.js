@@ -3,8 +3,49 @@ import './AllProducts.css'
 import axios from 'axios'
 import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
-import pr1 from '../productPic/pr1.avif'
-import pr2 from '../productPic/pr2.avif'
+//products images
+import pr1 from '../productPic/pr1.avif';import pr2 from '../productPic/pr2.avif'
+import pr3 from '../productPic/pr3.avif';import pr4 from '../productPic/pr4.avif'
+import pr5 from '../productPic/pr5.avif';import pr6 from '../productPic/pr6.avif'
+import pr7 from '../productPic/pr7.avif';import pr8 from '../productPic/pr8.avif'
+import pr9 from '../productPic/pr9.avif';import pr10 from '../productPic/pr10.avif'
+import pr11 from '../productPic/pr11.avif';import pr12 from '../productPic/pr12.avif'
+import pr13 from '../productPic/pr13.avif';import pr14 from '../productPic/pr14.avif'
+import pr15 from '../productPic/pr15.avif';import pr16 from '../productPic/pr16.avif'
+import pr17 from '../productPic/pr17.avif';import pr18 from '../productPic/pr18.avif'
+import pr19 from '../productPic/pr19.avif';import pr20 from '../productPic/pr20.avif'
+import pr21 from '../productPic/pr21.avif';import pr22 from '../productPic/pr22.avif'
+import pr23 from '../productPic/pr23.avif';import pr24 from '../productPic/pr24.avif'
+import pr25 from '../productPic/pr25.avif'
+
+  const imgMap = {
+    pr1: pr1,pr2: pr2,pr3: pr3,
+    pr4: pr4,
+    pr5: pr5,
+    pr6: pr6,
+    pr7: pr7,
+    pr8: pr8,
+    pr9: pr9,
+    pr10: pr10,
+    pr11: pr11,
+    pr12: pr12,
+    pr13: pr13,
+    pr14: pr14,
+    pr15: pr15,
+    pr16: pr16,
+    pr17: pr17,
+    pr18: pr18,
+    pr19: pr19,
+    pr20: pr20,
+    pr21: pr21,
+    pr22: pr22,
+    pr23: pr23,
+    pr24: pr24,
+    pr25: pr25,
+  }
+// 
+
+
 const CreateProduct = () => {
   const API_URL = process.env.REACT_APP_API_URL;
   const [products, setProducts] = useState([])
@@ -17,10 +58,6 @@ const CreateProduct = () => {
   const [loading, setLoading] = useState(false)
   const navigate = useNavigate()
 
-  const imgMap = {
-    pr1: pr1,
-    pr2: pr2,
-  }
 
   const handleDelete = async (id) => {
     const isConfirmed = window.confirm('Are you sure you want to delete this product?');
@@ -141,7 +178,7 @@ const CreateProduct = () => {
 
         {products ?
           products.map((product) => (
-            <div key={product._id} className="card card1" style={{ width: "274px", height: "250px", border: 'none', cursor: 'pointer' }}>
+            <div key={product._id} className="card card1 mt-5" style={{ width: "274px", height: "250px", border: 'none', cursor: 'pointer' }}>
               <img src={imgMap[product.img] || product.img} className="card-img-top card-img" alt="..." />
               <div class="card-body">
                 <p class="card-text card-text-1">{product.name}</p>
