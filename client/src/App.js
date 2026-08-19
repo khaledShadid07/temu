@@ -4,6 +4,7 @@ import AllProducts from './components/AllProducts';
 import CreateProduct from './components/CreateProduct';
 import Main from './components/Main';
 import Footer from './components/Footer';
+import Cart from './components/Cart';
 
 function App() {
   return (
@@ -14,6 +15,7 @@ function App() {
              <Route path='/AllProducts' element={<AllProducts/>} />
              <Route path='/CreateProduct' element={<CreateProduct/>} />
              <Route path='/Footer' element={<Footer/>} />
+             <Route path='/Cart' element={<Cart/>} />
       </Routes>
     </Router>
   );

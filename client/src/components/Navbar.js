@@ -217,7 +217,7 @@ const Navbar = () => {
                 localStorage.setItem('userName',res.data.user.userName)
                 setUserName(localStorage.getItem('userName'))
                 alert('you login successfully ✅');
-                navigate('/AllProducts');
+                //navigate('/');
                 
               }
               catch (error) {
