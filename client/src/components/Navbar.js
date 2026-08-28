@@ -1,6 +1,7 @@
 import React from 'react'
+import { Link } from 'react-router-dom';
 import './Navbar.css'
-import { useState} from 'react'
+import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import axios from 'axios'
 const Navbar = () => {
@@ -10,7 +11,29 @@ const Navbar = () => {
   const [password, setPassword] = useState('');
   const navigate = useNavigate()
   const [loading, setLoading] = useState(false);
-  const [token,setToken]=useState(localStorage.getItem('token')||'')
+  const [token, setToken] = useState(localStorage.getItem('token') || '')
+  const [quantity, setQuantity] = useState()
+
+  useEffect(() => {
+    const token = localStorage.getItem('token')
+
+    const fetchQuantity = async () => {
+      const res = await axios.get(`${API_URL}/cart/quantity`, { headers: { "Authorization": token } })
+      setQuantity(res.data.quantity || 0)
+
+    }//
+    fetchQuantity()
+
+    //to update cart 
+    const handelCartUpdate = () => { fetchQuantity() }
+    window.addEventListener('cartUpdated', handelCartUpdate)
+    return () => { window.removeEventListener('cartUpdated', handelCartUpdate); };
+
+
+
+
+  }, [])
+
   return (
     <>
       {/*upper nav start  */}
@@ -48,9 +71,14 @@ const Navbar = () => {
 
       {/* lower nav start */}
       <nav className='nav-2nd d-flex align-items-center  align-content-center justify-content-center  flex-wrap p-2 px-4'>
-        <div style={{ cursor: 'pointer' }} className='me-3 responsive-1'>
-          <svg class="iconSvg-2ArbZ iconFill-65mNB" alt="" aria-label="" xmlns="http://www.w3.org/2000/svg" version="1.1" viewBox="0 0 1024 1024" width="30px" height="30px"><path d="M650.7 916.1c-32.8 0-59.4-26.6-59.5-59.4 0-32.8 26.6-59.4 59.5-59.4 32.8 0 59.4 26.6 59.4 59.4 0 32.8-26.6 59.4-59.4 59.4z m-396.2 0c-32.8 0-59.4-26.6-59.5-59.4 0-32.8 26.6-59.4 59.5-59.4 32.8 0 59.4 26.6 59.4 59.4 0 32.8-26.6 59.4-59.4 59.4z m684.2-815.1l-90.3 17.4c-49.9 9.6-88.7 49.2-97.2 99.4l-2.3 13.8-486.2 0c-91.4 0-165.5 74.1-165.5 165.5 0 8.8 0.7 17.6 2.1 26.3l28.9 179.1c12.6 78.3 80.2 135.8 159.4 135.8l335.9 0c80.8 0 149.1-59.7 160-139.6l43-314.8 0.5-2.3 8.4-49.6c2.5-15 14.2-26.9 29.1-29.8l90.3-17.4c23.1-4.4 38.3-26.8 33.9-49.9-4.4-23.1-26.8-38.3-50-33.9z m-676 216l473.2 0-36.9 270.1c-5.2 37.7-37.4 65.9-75.5 65.9l-335.9 0c-37.4 0-69.3-27.1-75.2-64.1l-28.9-179c-0.7-4.2-1-8.5-1-12.8 0-44.3 35.9-80.2 80.2-80.1z"></path></svg>
-        </div>
+        <Link to='/Cart'>
+          <div style={{ cursor: 'pointer' ,position:'relative'}} className='me-3 responsive-1'>
+            
+            <svg class="iconSvg-2ArbZ iconFill-65mNB" alt="" aria-label="" xmlns="http://www.w3.org/2000/svg" version="1.1" viewBox="0 0 1024 1024" width="30px" height="30px"><path d="M650.7 916.1c-32.8 0-59.4-26.6-59.5-59.4 0-32.8 26.6-59.4 59.5-59.4 32.8 0 59.4 26.6 59.4 59.4 0 32.8-26.6 59.4-59.4 59.4z m-396.2 0c-32.8 0-59.4-26.6-59.5-59.4 0-32.8 26.6-59.4 59.5-59.4 32.8 0 59.4 26.6 59.4 59.4 0 32.8-26.6 59.4-59.4 59.4z m684.2-815.1l-90.3 17.4c-49.9 9.6-88.7 49.2-97.2 99.4l-2.3 13.8-486.2 0c-91.4 0-165.5 74.1-165.5 165.5 0 8.8 0.7 17.6 2.1 26.3l28.9 179.1c12.6 78.3 80.2 135.8 159.4 135.8l335.9 0c80.8 0 149.1-59.7 160-139.6l43-314.8 0.5-2.3 8.4-49.6c2.5-15 14.2-26.9 29.1-29.8l90.3-17.4c23.1-4.4 38.3-26.8 33.9-49.9-4.4-23.1-26.8-38.3-50-33.9z m-676 216l473.2 0-36.9 270.1c-5.2 37.7-37.4 65.9-75.5 65.9l-335.9 0c-37.4 0-69.3-27.1-75.2-64.1l-28.9-179c-0.7-4.2-1-8.5-1-12.8 0-44.3 35.9-80.2 80.2-80.1z"></path></svg>
+            {quantity<10? <div style={{position:'absolute',top:'-15px',left:'8px',color:'black',fontWeight:'700'}}>{quantity}</div>: <div style={{position:'absolute',top:'-15px',left:'5px',color:'black',fontWeight:'700'}}>{quantity}</div>}
+           
+          </div>
+        </Link>
 
         <div style={{ cursor: 'pointer' }} className='d-flex align-items-center me-3 responsive-1'>
           <div className='nav-2nd-p '>الدعم</div>
@@ -147,118 +175,118 @@ const Navbar = () => {
 
       {/* 1st modal start */}
       <div class="modal fade" id="staticBackdrop" data-bs-backdrop="static" data-bs-keyboard="false" tabIndex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
-        
+
         <div class="modal-dialog">
-        {token? <div class="modal-content">
+          {token ? <div class="modal-content">
             <div className="modal-header ">
               <button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
-             {/* 1 */}
+            {/* 1 */}
             <div className='d-flex justify-content-center gap-1 '>
-              <p style={{ fontFamily: 'Noto Sans Arabic', color: 'rgb(10, 136, 0)' }} className=' '>{localStorage.getItem('userName')} اهلا وسهلا </p> 
+              <p style={{ fontFamily: 'Noto Sans Arabic', color: 'rgb(10, 136, 0)' }} className=' '>{localStorage.getItem('userName')} اهلا وسهلا </p>
               <svg xmlns="http://www.w3.org/2000/svg" version="1.1" viewBox="0 0 1024 1024" width="1em" height="1em" fill="rgb(10, 136, 0)" className="mt-1   lock-1D86P" aria-hidden="true"><path d="M512 30.7c138.6 0 250.9 112.3 250.9 250.9l0 61.4 35.8 0c59.5 0 108.2 46.1 112.4 104.6l0.3 8.1 0 419.8c0 62.2-50.4 112.6-112.7 112.7l-573.4 0c-62.2 0-112.6-50.4-112.7-112.7l0-419.8c0-62.2 50.4-112.6 112.7-112.7l35.8 0 0-61.4c0-134.8 106.3-244.8 239.7-250.6l11.2-0.3z m0 506.9c-22.6 0-41 18.3-41 41l0 174c0 22.6 18.3 41 41 41 22.6 0 41-18.3 41-41l0-174c0-22.6-18.3-41-41-41z m0-414.7c-87.7 0-158.7 71.1-158.7 158.7l0 56.3 317.4 0 0-56.3c0-84.6-66.2-153.8-149.7-158.5l-9-0.2z"></path></svg>
             </div>
             {/* 1end */}
-     
+
             {/*login form start */} {/*login form start */} {/*login form start */} {/*login form start */}
-            <form  className='form-login d-flex flex-column' action="">
+            <form className='form-login d-flex flex-column' action="">
 
               <p style={{ fontFamily: 'Noto Sans Arabic', textAlign: 'center' }} className='fw-bold'>يمكنك الان التسوق ومتابعه جميع العروض </p>
-             
+
               {/*  */}
-              <button style={{ fontFamily: 'Noto Sans Arabic' ,border:'none'}} onClick={()=>{localStorage.removeItem('token');setToken(localStorage.getItem('token'));localStorage.removeItem('userName');setUserName('')}} className="policyNote-hocda policyClassName-1LYrA text-center mt-3 text-danger"> تسجيل الخروج</button>
-              <br/>
+              <button style={{ fontFamily: 'Noto Sans Arabic', border: 'none' }} onClick={() => { localStorage.removeItem('token'); setToken(localStorage.getItem('token')); localStorage.removeItem('userName'); setUserName('') }} className="policyNote-hocda policyClassName-1LYrA text-center mt-3 text-danger"> تسجيل الخروج</button>
+              <br />
               <div style={{ fontFamily: 'Noto Sans Arabic' }} className="policyNote-hocda policyClassName-1LYrA text-center mt-3"><span class="policyLinkParent-1X3oa"><a href="#" className="a-raak6 policyLink-jKwVU" aria-label="شروط الاستخدام - يفتح في صفحة جديدة، رابط." tabindex="0">شروط الاستخدام</a></span> و<span class="policyLinkParent-1X3oa"><a href="#" className="a-raak6 policyLink-jKwVU" aria-label="سياسة الخصوصية - يفتح في صفحة جديدة، رابط." role="link" tabindex="0">سياسة الخصوصية</a></span>.</div>
             </form>
 
             {/*login form end */} {/*login form end */} {/*login form end */} {/*login form end */}
 
 
-          </div>:
-         <div class="modal-content">
-            <div className="modal-header ">
-              <button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div> :
+            <div class="modal-content">
+              <div className="modal-header ">
+                <button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+              </div>
+              <p className="modal-title profile-modal-txt1 " id="staticBackdropLabel">تسجيل الدخول / إنشاء حساب</p>
+              {/* 1 */}
+              <div className='d-flex justify-content-center gap-1 '>
+                <p style={{ fontFamily: 'Noto Sans Arabic', color: 'rgb(10, 136, 0)' }} className=' '>جميع البيانات مؤمنة</p>
+                <svg xmlns="http://www.w3.org/2000/svg" version="1.1" viewBox="0 0 1024 1024" width="1em" height="1em" fill="rgb(10, 136, 0)" className="mt-1   lock-1D86P" aria-hidden="true"><path d="M512 30.7c138.6 0 250.9 112.3 250.9 250.9l0 61.4 35.8 0c59.5 0 108.2 46.1 112.4 104.6l0.3 8.1 0 419.8c0 62.2-50.4 112.6-112.7 112.7l-573.4 0c-62.2 0-112.6-50.4-112.7-112.7l0-419.8c0-62.2 50.4-112.6 112.7-112.7l35.8 0 0-61.4c0-134.8 106.3-244.8 239.7-250.6l11.2-0.3z m0 506.9c-22.6 0-41 18.3-41 41l0 174c0 22.6 18.3 41 41 41 22.6 0 41-18.3 41-41l0-174c0-22.6-18.3-41-41-41z m0-414.7c-87.7 0-158.7 71.1-158.7 158.7l0 56.3 317.4 0 0-56.3c0-84.6-66.2-153.8-149.7-158.5l-9-0.2z"></path></svg>
+              </div>
+              {/* 1end */}
+              {/* 2start */}
+              <main className='d-flex align-items-center justify-content-center gap-4'>
+                <div className='d-flex flex-column align-items-center me-4'>
+                  <img alt="" data-cui-image="1" data-state="succ" class="new-cui-img-3czqs icon-2SJtA supportRotate-35LoL" src="https://aimg.kwcdn.com/upload_aimg/lyd/7e30ab01-509b-416d-ab9e-0c3abadb80ad.png?imageView2/2/w/72/q/80/format/avif" aria-hidden="true" data-did-mount="1" />
+                  <p style={{ fontFamily: 'Noto Sans Arabic' }} className='fw-bold '>إرجاع مجاني</p>
+                  <p style={{ fontFamily: 'Noto Sans Arabic' }} className=''>لمدة تصل إلى ٩٠ يومًا</p>
+
+                </div>
+                <div className='d-flex flex-column align-items-center ms-4'>
+                  <img alt="" data-cui-image="1" data-state="succ" class="new-cui-img-3czqs icon-2SJtA supportRotate-35LoL" src="https://aimg.kwcdn.com/upload_aimg/lyd/30f360ec-b978-4a63-824b-a8e64c57d117.png?imageView2/2/w/72/q/80/format/avif" aria-hidden="true" data-did-mount="1" />
+                  <p style={{ fontFamily: 'Noto Sans Arabic' }} className='fw-bold '>شحن مجاني</p>
+                  <p style={{ fontFamily: 'Noto Sans Arabic' }} className=''>عرض خاص لك</p>
+
+                </div>
+
+
+              </main>
+              {/* 2end */}
+
+              {/*login form start */} {/*login form start */} {/*login form start */} {/*login form start */}
+              <form onSubmit={async (e) => {
+                e.preventDefault()
+                setLoading(true)
+                try {
+                  console.log(`url:${API_URL}`)
+                  const res = await axios.post(`${API_URL}/users/login`, { email, password })
+                  localStorage.setItem('token', res.data.token)
+                  setToken(localStorage.getItem('token'))
+                  localStorage.setItem('userName', res.data.user.userName)
+                  setUserName(localStorage.getItem('userName'))
+                  alert('you login successfully ✅');
+                  //navigate('/');
+
+                }
+                catch (error) {
+                  const message = error.response?.data?.message || error.message
+                  alert(message)
+                }
+
+                finally {
+                  setLoading(false)
+                }
+
+
+              }} className='form-login d-flex flex-column' action="">
+
+                <p style={{ fontFamily: 'Noto Sans Arabic', textAlign: 'right' }} className='fw-bold'>البريد الإلكتروني </p>
+                <input style={{ height: '50px' }} className='form-control border border-secondary' type="email" value={email} onChange={(e) => setEmail(e.target.value)} />
+                <br />
+                <p style={{ fontFamily: 'Noto Sans Arabic', textAlign: 'right' }} className='fw-bold'>كلمه المرور</p>
+                <input style={{ height: '50px' }} className='form-control border border-secondary' type="password" value={password} onChange={(e) => setPassword(e.target.value)} />
+                <button type="submit" class="form-login-btn mt-4 fw-bold" >{loading ? 'يرجى الانتظار ⏳' : 'المتابعه'}</button>
+                <button type="button" data-bs-dismiss="modal" data-bs-toggle="modal" data-bs-target="#staticBackdrop1" style={{ border: 'none' }}>  <p style={{ fontFamily: 'Noto Sans Arabic', textAlign: 'center' }} className=' text-secondary mt-3'><u>إنشاء حساب جديد</u> </p> </button>
+                <p style={{ fontFamily: 'Noto Sans Arabic', textAlign: 'center' }} className=' text-secondary mt-4'>أو المتابعة بطرق أخرى</p>
+                {/*  */}
+                <div className='d-flex align-items-center justify-content-center gap-4'>
+
+                  <svg xmlns="http://www.w3.org/2000/svg" version="1.1" viewBox="0 0 1024 1024" width="60px" height="60px" fill="currentColor"><path d="M503.4 228.7c41.5 0 93.5-27.6 124.5-64.5 28-33.4 48.5-80 48.6-126.7 0-6.3-0.6-12.6-1.8-17.8-46.2 1.7-101.7 30.5-135.1 69.1-26.3 29.3-50.3 75.4-50.2 122.7 0 6.9 1.2 13.8 1.7 16.1 3 0.6 7.6 1.1 12.3 1.1z m-146.1 696.8c56.7 0 81.8-37.4 152.5-37.4 71.9 0 87.7 36.2 150.9 36.3 62 0 103.5-56.4 142.6-111.7 43.8-63.3 62-125.5 63.2-128.4-4.1-1.2-122.8-49-122.8-183.2 0-116.3 93.5-168.7 98.8-172.8-62-87.5-156.1-89.8-181.8-89.7-69.6 0-126.3 41.4-162 41.4-38.6 0-89.4-39.1-149.6-39.2-114.6 0-230.9 93.3-230.9 269.5 0 109.4 43.2 225.2 96.4 300.1 45.5 63.3 85.3 115.2 142.6 115.1z"></path></svg>
+                  <svg xmlns="http://www.w3.org/2000/svg" version="1.1" viewBox="0 0 1024 1024" width="60px" height="60px" fill="currentColor" class="fb-2eJ9m"><path d="M607.9 248c-99 0-163.6 60-163.6 168.5v95.5h-110v125.2h110v302.8c-207.2-32.5-365.6-211.7-365.6-428 0-239.3 194-433.2 433.3-433.2 239.3 0 433.3 193.9 433.2 433.2 0 216.2-158.4 395.5-365.5 428v-302.8h100.9l19.3-125.2h-120.2v-81.3c0-34.3 16.7-67.7 70.6-67.6h54.6v-106.7s-49.6-8.5-96.9-8.4z"></path></svg>
+                  <img alt="Google" data-cui-image="1" data-state="succ" className="new-cui-img-3czqs icon-DqqeU google" src="https://aimg.kwcdn.com/upload_aimg/login/8e2e59cd-5090-4feb-ae78-691e9971ed89.png.slim.png?imageView2/2/w/72/q/80/format/avif" aria-hidden="true" data-did-mount="1"></img>
+
+                </div>
+                {/*  */}
+                <div style={{ fontFamily: 'Noto Sans Arabic' }} className="policyNote-hocda policyClassName-1LYrA text-center mt-3">بالمتابعة، فإنك توافق على <span class="policyLinkParent-1X3oa"><a href="#" className="a-raak6 policyLink-jKwVU" aria-label="شروط الاستخدام - يفتح في صفحة جديدة، رابط." tabindex="0">شروط الاستخدام</a></span> و<span class="policyLinkParent-1X3oa"><a href="#" className="a-raak6 policyLink-jKwVU" aria-label="سياسة الخصوصية - يفتح في صفحة جديدة، رابط." role="link" tabindex="0">سياسة الخصوصية</a></span>.</div>
+              </form>
+
+              {/*login form end */} {/*login form end */} {/*login form end */} {/*login form end */}
+
+
             </div>
-            <p className="modal-title profile-modal-txt1 " id="staticBackdropLabel">تسجيل الدخول / إنشاء حساب</p>
-            {/* 1 */}
-            <div className='d-flex justify-content-center gap-1 '>
-              <p style={{ fontFamily: 'Noto Sans Arabic', color: 'rgb(10, 136, 0)' }} className=' '>جميع البيانات مؤمنة</p>
-              <svg xmlns="http://www.w3.org/2000/svg" version="1.1" viewBox="0 0 1024 1024" width="1em" height="1em" fill="rgb(10, 136, 0)" className="mt-1   lock-1D86P" aria-hidden="true"><path d="M512 30.7c138.6 0 250.9 112.3 250.9 250.9l0 61.4 35.8 0c59.5 0 108.2 46.1 112.4 104.6l0.3 8.1 0 419.8c0 62.2-50.4 112.6-112.7 112.7l-573.4 0c-62.2 0-112.6-50.4-112.7-112.7l0-419.8c0-62.2 50.4-112.6 112.7-112.7l35.8 0 0-61.4c0-134.8 106.3-244.8 239.7-250.6l11.2-0.3z m0 506.9c-22.6 0-41 18.3-41 41l0 174c0 22.6 18.3 41 41 41 22.6 0 41-18.3 41-41l0-174c0-22.6-18.3-41-41-41z m0-414.7c-87.7 0-158.7 71.1-158.7 158.7l0 56.3 317.4 0 0-56.3c0-84.6-66.2-153.8-149.7-158.5l-9-0.2z"></path></svg>
-            </div>
-            {/* 1end */}
-            {/* 2start */}
-            <main className='d-flex align-items-center justify-content-center gap-4'>
-              <div className='d-flex flex-column align-items-center me-4'>
-                <img alt="" data-cui-image="1" data-state="succ" class="new-cui-img-3czqs icon-2SJtA supportRotate-35LoL" src="https://aimg.kwcdn.com/upload_aimg/lyd/7e30ab01-509b-416d-ab9e-0c3abadb80ad.png?imageView2/2/w/72/q/80/format/avif" aria-hidden="true" data-did-mount="1" />
-                <p style={{ fontFamily: 'Noto Sans Arabic' }} className='fw-bold '>إرجاع مجاني</p>
-                <p style={{ fontFamily: 'Noto Sans Arabic' }} className=''>لمدة تصل إلى ٩٠ يومًا</p>
 
-              </div>
-              <div className='d-flex flex-column align-items-center ms-4'>
-                <img alt="" data-cui-image="1" data-state="succ" class="new-cui-img-3czqs icon-2SJtA supportRotate-35LoL" src="https://aimg.kwcdn.com/upload_aimg/lyd/30f360ec-b978-4a63-824b-a8e64c57d117.png?imageView2/2/w/72/q/80/format/avif" aria-hidden="true" data-did-mount="1" />
-                <p style={{ fontFamily: 'Noto Sans Arabic' }} className='fw-bold '>شحن مجاني</p>
-                <p style={{ fontFamily: 'Noto Sans Arabic' }} className=''>عرض خاص لك</p>
+          }
 
-              </div>
-
-
-            </main>
-            {/* 2end */}
-
-            {/*login form start */} {/*login form start */} {/*login form start */} {/*login form start */}
-            <form onSubmit={async (e) => {
-              e.preventDefault()
-              setLoading(true)
-              try {
-                console.log(`url:${API_URL}`)
-                const res = await axios.post(`${API_URL}/users/login`, { email, password })
-                localStorage.setItem('token', res.data.token)
-                setToken(localStorage.getItem('token'))
-                localStorage.setItem('userName',res.data.user.userName)
-                setUserName(localStorage.getItem('userName'))
-                alert('you login successfully ✅');
-                //navigate('/');
-                
-              }
-              catch (error) {
-                const message = error.response?.data?.message || error.message
-                alert(message)
-              }
-
-              finally {
-                setLoading(false)
-              }
-
-
-            }} className='form-login d-flex flex-column' action="">
-
-              <p style={{ fontFamily: 'Noto Sans Arabic', textAlign: 'right' }} className='fw-bold'>البريد الإلكتروني </p>
-              <input style={{ height: '50px' }} className='form-control border border-secondary' type="email" value={email} onChange={(e) => setEmail(e.target.value)} />
-              <br />
-              <p style={{ fontFamily: 'Noto Sans Arabic', textAlign: 'right' }} className='fw-bold'>كلمه المرور</p>
-              <input style={{ height: '50px' }} className='form-control border border-secondary' type="password" value={password} onChange={(e) => setPassword(e.target.value)} />
-              <button type="submit" class="form-login-btn mt-4 fw-bold" >{loading ? 'يرجى الانتظار ⏳' : 'المتابعه'}</button>
-              <button type="button" data-bs-dismiss="modal" data-bs-toggle="modal" data-bs-target="#staticBackdrop1" style={{ border: 'none' }}>  <p style={{ fontFamily: 'Noto Sans Arabic', textAlign: 'center' }} className=' text-secondary mt-3'><u>إنشاء حساب جديد</u> </p> </button>
-              <p style={{ fontFamily: 'Noto Sans Arabic', textAlign: 'center' }} className=' text-secondary mt-4'>أو المتابعة بطرق أخرى</p>
-              {/*  */}
-              <div className='d-flex align-items-center justify-content-center gap-4'>
-
-                <svg xmlns="http://www.w3.org/2000/svg" version="1.1" viewBox="0 0 1024 1024" width="60px" height="60px" fill="currentColor"><path d="M503.4 228.7c41.5 0 93.5-27.6 124.5-64.5 28-33.4 48.5-80 48.6-126.7 0-6.3-0.6-12.6-1.8-17.8-46.2 1.7-101.7 30.5-135.1 69.1-26.3 29.3-50.3 75.4-50.2 122.7 0 6.9 1.2 13.8 1.7 16.1 3 0.6 7.6 1.1 12.3 1.1z m-146.1 696.8c56.7 0 81.8-37.4 152.5-37.4 71.9 0 87.7 36.2 150.9 36.3 62 0 103.5-56.4 142.6-111.7 43.8-63.3 62-125.5 63.2-128.4-4.1-1.2-122.8-49-122.8-183.2 0-116.3 93.5-168.7 98.8-172.8-62-87.5-156.1-89.8-181.8-89.7-69.6 0-126.3 41.4-162 41.4-38.6 0-89.4-39.1-149.6-39.2-114.6 0-230.9 93.3-230.9 269.5 0 109.4 43.2 225.2 96.4 300.1 45.5 63.3 85.3 115.2 142.6 115.1z"></path></svg>
-                <svg xmlns="http://www.w3.org/2000/svg" version="1.1" viewBox="0 0 1024 1024" width="60px" height="60px" fill="currentColor" class="fb-2eJ9m"><path d="M607.9 248c-99 0-163.6 60-163.6 168.5v95.5h-110v125.2h110v302.8c-207.2-32.5-365.6-211.7-365.6-428 0-239.3 194-433.2 433.3-433.2 239.3 0 433.3 193.9 433.2 433.2 0 216.2-158.4 395.5-365.5 428v-302.8h100.9l19.3-125.2h-120.2v-81.3c0-34.3 16.7-67.7 70.6-67.6h54.6v-106.7s-49.6-8.5-96.9-8.4z"></path></svg>
-                <img alt="Google" data-cui-image="1" data-state="succ" className="new-cui-img-3czqs icon-DqqeU google" src="https://aimg.kwcdn.com/upload_aimg/login/8e2e59cd-5090-4feb-ae78-691e9971ed89.png.slim.png?imageView2/2/w/72/q/80/format/avif" aria-hidden="true" data-did-mount="1"></img>
-
-              </div>
-              {/*  */}
-              <div style={{ fontFamily: 'Noto Sans Arabic' }} className="policyNote-hocda policyClassName-1LYrA text-center mt-3">بالمتابعة، فإنك توافق على <span class="policyLinkParent-1X3oa"><a href="#" className="a-raak6 policyLink-jKwVU" aria-label="شروط الاستخدام - يفتح في صفحة جديدة، رابط." tabindex="0">شروط الاستخدام</a></span> و<span class="policyLinkParent-1X3oa"><a href="#" className="a-raak6 policyLink-jKwVU" aria-label="سياسة الخصوصية - يفتح في صفحة جديدة، رابط." role="link" tabindex="0">سياسة الخصوصية</a></span>.</div>
-            </form>
-
-            {/*login form end */} {/*login form end */} {/*login form end */} {/*login form end */}
-
-
-          </div>
-        
-        }   
-         
 
         </div>
 
@@ -272,16 +300,16 @@ const Navbar = () => {
 
       <div class="modal fade" id="staticBackdrop1" data-bs-backdrop="static" data-bs-keyboard="false" tabIndex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
         <div class="modal-dialog">
-          {token?<div class="modal-content">
+          {token ? <div class="modal-content">
             <div className="modal-header ">
               <button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <p className="modal-title profile-modal-txt1 mt-4 " id="staticBackdropLabel ">لقد تم انشاء الحساب بنجاح  ✅</p>
-            <br/>
-            <br/>
-           
+            <br />
+            <br />
 
-          </div>  :<div class="modal-content">
+
+          </div> : <div class="modal-content">
             <div className="modal-header ">
               <button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
@@ -298,17 +326,17 @@ const Navbar = () => {
               e.preventDefault();
               setLoading(true)
               try {
-                const res =await axios.post(`${API_URL}/users/register`,{userName,email,password})
+                const res = await axios.post(`${API_URL}/users/register`, { userName, email, password })
                 localStorage.setItem('token', res.data.token)
                 setToken(localStorage.getItem('token'))
                 alert('you registered successfully ✅');
                 navigate('/AllProducts');
-               }
+              }
               catch (error) {
                 const message = error.response?.data?.message || error.message
                 alert(message)
               }
-              finally{setLoading(false)}
+              finally { setLoading(false) }
 
             }}>
               <div className='mb-4'>
@@ -340,7 +368,7 @@ const Navbar = () => {
 
 
           </div>}
-          
+
         </div>
 
       </div>

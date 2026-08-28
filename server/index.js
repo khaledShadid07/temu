@@ -1,5 +1,6 @@
 const userRouter = require('./router/userRouter')
 const productRouter=require('./router/productRouter')
+const cartRouter=require('./router/cartRouter')
 const connectdb = require('./config/db')
 const express = require('express')
 const dotenv = require ('dotenv')
@@ -16,6 +17,7 @@ app.use(cors({origin: "*",credentials: true,methods: "*",allowedHeaders: ['Conte
 app.use('/uploads',express.static('uploads'))
 app.use('/users',userRouter)
 app.use('/products',productRouter)
+app.use('/cart',cartRouter)
 
 
 

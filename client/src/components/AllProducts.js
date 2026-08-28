@@ -52,6 +52,7 @@ const imgMap = {
 const AllProducts = () => {
   const API_URL = process.env.REACT_APP_API_URL;
   const [products, setProducts] = useState([]);
+  const [quantity,setquantity]=useState(1)
   useEffect(() => {
 
     const fetchProducts = async () => {
@@ -65,9 +66,24 @@ const AllProducts = () => {
 
   }, [])
 
+
+  const addToCart = async (productId,quantity) => {
+    const token =localStorage.getItem('token')
+    try {
+   const res= await axios.post(`${API_URL}/cart/addToCart`,{productId,quantity},{headers:{'Authorization': `${token}` }})
+      window.dispatchEvent(new Event('cartUpdated'))
+      alert(res.data.message)
+    }
+    catch (error) {
+      const message = error.response?.data?.message || error.message
+      alert(message)
+    }
+
+  }
+
   return (
     <>
-     
+
 
 
       {/*all products start  */}
@@ -81,21 +97,24 @@ const AllProducts = () => {
 
               <div className='d-flex align-items-start '>
 
-                <div className='cart-icon me-1 d-flex align-items-center'>
-                  <svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" fill="dark" className="bi bi-cart-plus " viewBox="0 0 16 16">
-                    <path d="M9 5.5a.5.5 0 0 0-1 0V7H6.5a.5.5 0 0 0 0 1H8v1.5a.5.5 0 0 0 1 0V8h1.5a.5.5 0 0 0 0-1H9z" />
-                    <path d="M.5 1a.5.5 0 0 0 0 1h1.11l.401 1.607 1.498 7.985A.5.5 0 0 0 4 12h1a2 2 0 1 0 0 4 2 2 0 0 0 0-4h7a2 2 0 1 0 0 4 2 2 0 0 0 0-4h1a.5.5 0 0 0 .491-.408l1.5-8A.5.5 0 0 0 14.5 3H2.89l-.405-1.621A.5.5 0 0 0 2 1zm3.915 10L3.102 4h10.796l-1.313 7zM6 14a1 1 0 1 1-2 0 1 1 0 0 1 2 0m7 0a1 1 0 1 1-2 0 1 1 0 0 1 2 0" />
-                  </svg>
-                </div>
+                <button onClick={() => { addToCart(product._id,quantity) }} style={{ border: 'none' }}>
+                  <div className='cart-icon me-1 d-flex align-items-center'>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" fill="dark" className="bi bi-cart-plus " viewBox="0 0 16 16">
+                      <path d="M9 5.5a.5.5 0 0 0-1 0V7H6.5a.5.5 0 0 0 0 1H8v1.5a.5.5 0 0 0 1 0V8h1.5a.5.5 0 0 0 0-1H9z" />
+                      <path d="M.5 1a.5.5 0 0 0 0 1h1.11l.401 1.607 1.498 7.985A.5.5 0 0 0 4 12h1a2 2 0 1 0 0 4 2 2 0 0 0 0-4h7a2 2 0 1 0 0 4 2 2 0 0 0 0-4h1a.5.5 0 0 0 .491-.408l1.5-8A.5.5 0 0 0 14.5 3H2.89l-.405-1.621A.5.5 0 0 0 2 1zm3.915 10L3.102 4h10.796l-1.313 7zM6 14a1 1 0 1 1-2 0 1 1 0 0 1 2 0m7 0a1 1 0 1 1-2 0 1 1 0 0 1 2 0" />
+                    </svg>
+                  </div>
 
-                {product.discount!==0? <div className='discount d-flex align-items-center px-1 mt- '>
+                </button>
+
+                {product.discount !== 0 ? <div className='discount d-flex align-items-center px-1 mt- '>
                   %{product.discount}-
-                </div>: <div className=''>
-                  
-                </div>} 
+                </div> : <div className=''>
 
-                {product.soldItems!==0 ?<div style={{ color: 'rgb(85, 85, 85)' }} className="ms-1 ">{product.soldItems}M+تم بيع</div>:<div style={{ color: 'rgb(85, 85, 85)',width:'15px' }} className="ms-1 "> </div>}
-               
+                </div>}
+
+                {product.soldItems !== 0 ? <div style={{ color: 'rgb(85, 85, 85)' }} className="ms-1 ">{product.soldItems}M+تم بيع</div> : <div style={{ color: 'rgb(85, 85, 85)', width: '15px' }} className="ms-1 "> </div>}
+
                 <del style={{ color: 'rgb(85, 85, 85)' }} className="ms-1 ">{product.price2}</del>
                 <div className='d-flex align-items center'>
 
@@ -110,7 +129,7 @@ const AllProducts = () => {
           </div>
 
         ))
-          : <h1>LOADING...</h1>}
+          : <div style={{ height: '100px', textAlign: 'center', color: 'black' }}>LOADING...</div>}
 
 
 
