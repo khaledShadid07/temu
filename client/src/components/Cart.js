@@ -250,7 +250,7 @@ const Cart = () => {
 
                 <div className='d-flex justify-content-between '>
                   <div className='' style={{ width: '80px', height: '35px' }} name="" id="">
-                    الكميه {quantity}
+                    الكميه {item.quantity}
                     {/* <option selected>الكميه</option>
                       <option value="1">1</option>
                       <option value="2">2</option>
