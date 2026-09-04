@@ -88,21 +88,57 @@ const Cart = () => {
 
 
 
-  const removeCart = async (productId) => {
-    const fetchCart = async () => {
-      const res1 = await axios.get(`${API_URL}/cart/getCart`, { headers: { 'Authorization': `${localStorage.getItem('token')}` } })
-      setCart(res1.data.items)
-    }
+  // const removeCart = async (productId) => {
+  //   const fetchCart = async () => {
+  //     const res1 = await axios.get(`${API_URL}/cart/getCart`, { headers: { 'Authorization': `${localStorage.getItem('token')}` } })
+  //     setCart(res1.data.items)
+  //   }
 
-    const res2 = await axios.delete(`${API_URL}/cart/removeFromCart/${productId}`, { headers: { 'Authorization': `${localStorage.getItem('token')}` } }
-    ).then(window.dispatchEvent(new Event('cartUpdated')), fetchCart()).catch(err => alert(err))
+  //   const res2 = await axios.delete(`${API_URL}/cart/removeFromCart/${productId}`, { headers: { 'Authorization': `${localStorage.getItem('token')}` } }
+  //   ).then(window.dispatchEvent(new Event('cartUpdated')), fetchCart()).catch(err => alert(err))
 
-    alert(res2.data.message)
-
-
+  //   alert(res2.data.message)
 
 
+
+
+  // }
+
+  const fetchCart = async () => {
+  try {
+    const token = localStorage.getItem('token');
+    const res = await axios.get(`${API_URL}/cart/getCart`, {
+      headers: { Authorization: token }
+    });
+    setCart(res.data.items);
+  } catch (err) {
+    console.error('Failed to update cart state:', err);
   }
+};
+
+const removeCart = async (productId) => {
+  try {
+    const token = localStorage.getItem('token');
+    
+    // 1. Send delete request to backend
+    const res = await axios.delete(`${API_URL}/cart/removeFromCart/${productId}`, {
+      headers: { Authorization: token }
+    });
+
+    // 2. Refresh local component state
+    await fetchCart();
+
+    // 3. Notify other components (like navbar counter)
+    window.dispatchEvent(new Event('cartUpdated'));
+
+    // 4. Alert success message from server
+    alert(res.data?.message || 'Item removed');
+    
+  } catch (err) {
+    const message = err.response?.data?.message || err.message;
+    alert(message);
+  }
+};
 
   return (
     <>

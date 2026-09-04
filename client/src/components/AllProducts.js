@@ -89,7 +89,7 @@ const AllProducts = () => {
       {/*all products start  */}
       <main className='cards-container d-flex justify-content-center align-content-center  flex-wrap gap-2  p-2'>
 
-        {products ? products.map((product) => (
+        {products.length>0 ? products.map((product) => (
           <div key={product._id} className="card card1" style={{ width: "274px", height: "250px", border: 'none', cursor: 'pointer' }}>
             <img className='img-card' title={product.name} src={imgMap[product.img]} alt="..." />
             <div class="card-body">
@@ -129,7 +129,10 @@ const AllProducts = () => {
           </div>
 
         ))
-          : <div style={{ height: '100px', textAlign: 'center', color: 'black' }}>LOADING...</div>}
+          : <p style={{ fontSize: '24px', textAlign: 'center' }}>
+  Loading products... <span className="spinner">🌀</span>
+</p> }
+
 
 
 

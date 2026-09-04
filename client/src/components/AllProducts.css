@@ -13,5 +13,7 @@
   transition: width 0.25s ease;}
 .img-card:hover{width: 280px;}
 
+@keyframes spin { 100% { transform: rotate(360deg); } }
+.spinner { display: inline-block; animation: spin 1s linear infinite; }
 
 
